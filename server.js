@@ -4,6 +4,8 @@ import fs from "node:fs";
 import chat from "./api/chat.js";
 import zavu from "./api/zavu.js";
 
+process.on("unhandledRejection", e => console.error("unhandledRejection", e));
+
 const page = fs.readFileSync(new URL("./public/index.html", import.meta.url));
 const routes = { "/api/chat": chat, "/api/zavu": zavu };
 

@@ -14,7 +14,9 @@ export default async function handler(req, res) {
   const isGroup = d.isGroup || d.groupId || d.group || /@g\.us$/.test(String(d.from)) || /@g\.us$/.test(String(d.chatId || ""));
   if (isGroup || d.fromMe) { console.log("wa skip group/self"); return res.status(200).json({ ok: true }); }
   console.log("wa in keys:", Object.keys(d).join(","));
-  seen.add(d.messageId);
+  if (d.messageId) seen.add(d.messageId);
+  if (seen.size > 20000) seen.clear();
+  if (threads.size > 5000) threads.clear();
   const text = d.text || d.caption || (d.messageType ? `[El usuario mandó un ${d.messageType}]` : "");
   if (!text) return res.status(200).json({ ok: true });
 
