@@ -39,6 +39,7 @@
   t.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); f.requestSubmit(); } });
   f.addEventListener("submit", async e => {
     e.preventDefault();
+    if (b.disabled) return;
     const message = t.value.trim(); if (!message) return;
     t.value = ""; b.disabled = true;
     add("me", message);
