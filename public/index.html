@@ -17,6 +17,7 @@
   .bot { background:var(--panel); border:1px solid var(--line); align-self:flex-start; border-bottom-left-radius:4px; }
   .me { background:var(--me); color:var(--meInk); align-self:flex-end; border-bottom-right-radius:4px; }
   .typing { color:var(--muted); font-style:italic; }
+  .sig { display:block; margin-top:6px; font:11px ui-monospace,monospace; color:var(--muted); }
   form { display:flex; gap:8px; padding:12px 16px 16px; max-width:760px; width:100%; margin:0 auto; }
   textarea { flex:1; resize:none; font:inherit; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:var(--panel); color:var(--ink); min-height:48px; max-height:160px; }
   button { font:inherit; font-weight:600; padding:0 18px; border-radius:14px; border:0; background:var(--accent); color:#fff; cursor:pointer; }
@@ -46,7 +47,8 @@
       const r = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ history, message }) });
       const j = await r.json();
       typing.remove();
-      add("bot", j.reply || "…");
+      const d = add("bot", j.reply || "…");
+      if (j.sig) { const t = document.createElement("span"); t.className = "sig"; t.textContent = "sello " + j.sig.slice(0, 8); d.appendChild(t); }
       history.push({ role: "user", text: message }, { role: "assistant", text: j.reply, sig: j.sig });
     } catch { typing.textContent = "Se cayó la conexión. Intenta otra vez."; }
     b.disabled = false; t.focus();

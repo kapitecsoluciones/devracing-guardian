@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 
   const history = threads.get(d.from) || [];
   const { reply, blocked } = await guardReply(history, text);
-  if (blocked) console.log("wa blocked:", blocked, JSON.stringify(text).slice(0, 200));
+  console.log("wa", JSON.stringify({ t: new Date().toISOString(), from: d.from, blocked: blocked || false, q: text.slice(0, 500), a: reply }));
   history.push({ role: "user", text }, { role: "assistant", text: reply, sig: sign(reply) });
   threads.set(d.from, history.slice(-12));
 

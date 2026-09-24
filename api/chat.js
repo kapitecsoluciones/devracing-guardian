@@ -19,6 +19,7 @@ export default async function handler(req, res) {
   const { history, message } = req.body || {};
   if (!message || typeof message !== "string") return res.status(400).json({ error: "message" });
   const { reply, blocked } = await guardReply(history, message);
-  if (blocked) console.log("blocked:", blocked, JSON.stringify(message).slice(0, 200));
+  // Bitácora completa: sirve para refutar screenshots editados.
+  console.log("chat", JSON.stringify({ t: new Date().toISOString(), ip, blocked: blocked || false, q: message.slice(0, 500), a: reply, sig: sign(reply).slice(0, 8) }));
   res.status(200).json({ reply, sig: sign(reply) });
 }
