@@ -3,6 +3,8 @@ import { guardReply, sign } from "../lib/guard.js";
 // Historial por contacto (best effort: vive mientras la función siga caliente).
 const threads = new Map();
 const seen = new Set();
+const sent = new Map();
+const sentAll = [];
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(200).send("ok");
@@ -17,6 +19,13 @@ export default async function handler(req, res) {
   if (d.messageId) seen.add(d.messageId);
   if (seen.size > 20000) seen.clear();
   if (threads.size > 5000) threads.clear();
+  // Tope de envíos para no quemar el número: 6/min por contacto y 30/min en total.
+  const now = Date.now();
+  const mine = (sent.get(d.from) || []).filter(t => now - t < 60000);
+  while (sentAll.length && now - sentAll[0] > 60000) sentAll.shift();
+  if (mine.length >= 6 || sentAll.length >= 30) { console.log("wa throttled"); return res.status(200).json({ ok: true }); }
+  mine.push(now); sent.set(d.from, mine); sentAll.push(now);
+  if (sent.size > 2000) sent.clear();
   const text = d.text || d.caption || (d.messageType ? `[El usuario mandó un ${d.messageType}]` : "");
   if (!text) return res.status(200).json({ ok: true });
 
